@@ -17,7 +17,7 @@ class CreateCartsTable extends Migration
             $table->id();
             $table->string('cart_status', 255);
             $table->float('payable_price');
-            $table->dateTime('closed_at');
+            $table->dateTime('closed_at')->nullable();
             $table->timestamps();
         });
     }
