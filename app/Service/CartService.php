@@ -130,6 +130,11 @@ class CartService implements CartServiceInterface
 
     public function close(int $cartId): CartDTO
     {
-        // TODO: Implement close() method.
+        $cart = $this->cartModel->find($cartId);
+        if ($cart == null) {
+            throw new EntityNotFoundException('carts', $cartId);
+        }
+        $cart->status = CartEnums::CART_STATUS_CLOSED;
+        $cart->save();
     }
 }
