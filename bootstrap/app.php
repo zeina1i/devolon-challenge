@@ -26,6 +26,9 @@ $app = new Illuminate\Foundation\Application(
 |
 */
 
+$app->bind(\App\Service\PricingServiceInterface::class, \App\Service\PricingService::class);
+$app->bind(\App\Service\CartServiceInterface::class, \App\Service\CartService::class);
+
 $app->singleton(
     Illuminate\Contracts\Http\Kernel::class,
     App\Http\Kernel::class
