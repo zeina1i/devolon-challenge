@@ -6,7 +6,7 @@ use App\Model\Product;
 use App\Model\SpecialPrice;
 use App\Service\DTO\PricingRuleDTO;
 
-class PricingService
+class PricingService implements PricingServiceInterface
 {
     private $productModel;
     private $specialPriceModel;
@@ -20,7 +20,7 @@ class PricingService
     public function calculate(int $productId, int $quantity, array $pricingRules = null): int
     {
         if ($pricingRules == null) {
-            $pricingRules = $this->getProductsPrices([$productId => $quantity])[$productId];
+            $pricingRules = $this->getProductsPricingRules([$productId => $quantity])[$productId];
         }
 /*
  * the keys of $pricingRules is equal to the $pricingRule.quantity
@@ -41,7 +41,7 @@ class PricingService
         return $totalPrice;
     }
 
-    public function getProductsPrices(array $productIdQuantityMap): array
+    public function getProductsPricingRules(array $productIdQuantityMap): array
     {
         $productIds = [];
         $specialPrices = $this->specialPriceModel;
