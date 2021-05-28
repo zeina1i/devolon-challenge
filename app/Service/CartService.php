@@ -1,29 +1,37 @@
 <?php
 
-
 namespace App\Service;
 
-
 use App\Enum\CartEnums;
+use App\Exceptions\EntityExistsException;
+use App\Exceptions\EntityNotFoundException;
 use App\Model\Cart;
 use App\Model\CartItem;
 use App\Service\DTO\CartDTO;
 use App\Service\Transformer\CartToCartDTOTransformer;
+use Illuminate\Support\Facades\DB;
 
 class CartService implements CartServiceInterface
 {
     private $cartToCartDTOTransformer;
     private $cartModel;
     private $cartItemModel;
+    private $pricingService;
+    private $DB;
 
     public function __construct(
         CartToCartDTOTransformer $cartToCartDTOTransformer,
         Cart $cartModel,
-        CartItem $cartItemModel
-    ) {
+        CartItem $cartItemModel,
+        PricingService $pricingService,
+        DB $DB
+    )
+    {
         $this->cartToCartDTOTransformer = $cartToCartDTOTransformer;
         $this->cartModel = $cartModel;
         $this->cartItemModel = $cartItemModel;
+        $this->pricingService = $pricingService;
+        $this->DB = $DB;
     }
 
     public function create(): CartDTO
@@ -39,7 +47,32 @@ class CartService implements CartServiceInterface
 
     public function addItem(int $cartId, int $productId): CartDTO
     {
-        // TODO: Implement addItem() method.
+        $cart = $this->cartModel->find($cartId);
+        if ($cart == null) {
+            throw new EntityNotFoundException('carts', $cartId);
+        }
+
+        $cartItem = $this->cartItemModel
+            ->where(['cart_id' => $cartId, 'product_id' => $productId])
+            ->first();
+        if ($cartItem != null) {
+            throw new EntityExistsException('carts', $cartId);
+        }
+
+        $this->DB::transaction(function() use ($cartId, $productId, $cart) {
+            $cartItem = new $this->cartItemModel;
+            $cartItem->cart_id = $cartId;
+            $cartItem->product_id = $productId;
+            $cartItem->quantity = 1;
+            $cartItem->payable_price = $this->pricingService->calculate($productId, 1);
+            $cartItem->detailed_price = '{}';
+            $cartItem->save();
+
+            $cart->payable_price += $cartItem->payable_price;
+            $cart->save();
+        });
+
+        return $this->cartToCartDTOTransformer->transform($cart);
     }
 
     public function removeItem(int $cartId, int $productId): CartDTO
