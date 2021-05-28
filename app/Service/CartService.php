@@ -77,7 +77,26 @@ class CartService implements CartServiceInterface
 
     public function removeItem(int $cartId, int $productId): CartDTO
     {
-        // TODO: Implement removeItem() method.
+        $cartItem = $this->cartItemModel->where([
+            'cart_id' => $cartId,
+            'product_id' => $productId,
+        ])->first();
+        if ($cartItem == null) {
+            throw new EntityNotFoundException('cart_items', $cartId);
+        }
+
+        $cart = $this->cartModel->find($cartId);
+        if ($cart == null) {
+            throw new EntityNotFoundException('carts', $cartId);
+        }
+
+        $this->DB::transaction(function() use ($cartItem, $cart) {
+            $cart->payable_price -= $cartItem->payable_price;
+            $cart->save();
+            $cartItem->delete();
+        });
+
+        return $this->cartToCartDTOTransformer->transform($cart);
     }
 
     public function changeQuantity(int $cartId, int $productId, int $quantity): CartDTO
