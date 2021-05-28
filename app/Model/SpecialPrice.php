@@ -4,9 +4,7 @@
 namespace App\Model;
 
 
-use Illuminate\Database\Eloquent\Model;
-
-class SpecialPrice extends Model
+class SpecialPrice extends BaseModel
 {
     protected $table = 'special_prices';
 
