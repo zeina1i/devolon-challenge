@@ -101,7 +101,31 @@ class CartService implements CartServiceInterface
 
     public function changeQuantity(int $cartId, int $productId, int $quantity): CartDTO
     {
-        // TODO: Implement changeQuantity() method.
+        $cartItem = $this->cartItemModel->where([
+            'cart_id' => $cartId,
+            'product_id' => $productId,
+        ])->first();
+        if ($cartItem == null) {
+            throw new EntityNotFoundException('cart_items', $cartId);
+        }
+
+        $cart = $this->cartModel->find($cartId);
+        if ($cart == null) {
+            throw new EntityNotFoundException('carts', $cartId);
+        }
+
+        $this->DB::transaction(function() use ($cartItem, $cart, $quantity, $productId) {
+            $cart->payable_price -= $cartItem->payable_price;
+
+            $cartItem->quantity = $quantity;
+            $cartItem->payable_price = $this->pricingService->calculate($productId, $quantity);
+            $cartItem->save();
+
+            $cart->payable_price += $cartItem->payable_price;
+            $cart->save();
+        });
+
+        return $this->cartToCartDTOTransformer->transform($cart);
     }
 
     public function close(int $cartId): CartDTO
