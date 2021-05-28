@@ -23,7 +23,7 @@ class CartService implements CartServiceInterface
         CartToCartDTOTransformer $cartToCartDTOTransformer,
         Cart $cartModel,
         CartItem $cartItemModel,
-        PricingService $pricingService,
+        PricingServiceInterface $pricingService,
         DB $DB
     )
     {
