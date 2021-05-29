@@ -3,10 +3,12 @@
 namespace App\Service;
 
 use App\Enum\CartEnums;
-use App\Exceptions\EntityExistsException;
+use App\Exceptions\CartItemExistsException;
+use App\Exceptions\CartItemNotFoundException;
 use App\Exceptions\EntityNotFoundException;
 use App\Model\Cart;
 use App\Model\CartItem;
+use App\Model\Product;
 use App\Service\DTO\CartDTO;
 use App\Service\Transformer\CartToCartDTOTransformer;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +18,7 @@ class CartService implements CartServiceInterface
     private $cartToCartDTOTransformer;
     private $cartModel;
     private $cartItemModel;
+    private $productModel;
     private $pricingService;
     private $DB;
 
@@ -23,6 +26,7 @@ class CartService implements CartServiceInterface
         CartToCartDTOTransformer $cartToCartDTOTransformer,
         Cart $cartModel,
         CartItem $cartItemModel,
+        Product $productModel,
         PricingServiceInterface $pricingService,
         DB $DB
     )
@@ -30,6 +34,7 @@ class CartService implements CartServiceInterface
         $this->cartToCartDTOTransformer = $cartToCartDTOTransformer;
         $this->cartModel = $cartModel;
         $this->cartItemModel = $cartItemModel;
+        $this->productModel = $productModel;
         $this->pricingService = $pricingService;
         $this->DB = $DB;
     }
@@ -49,15 +54,21 @@ class CartService implements CartServiceInterface
     {
         $cart = $this->cartModel->find($cartId);
         if ($cart == null) {
-            throw new EntityNotFoundException('carts', $cartId);
+            throw new EntityNotFoundException('cart', $cartId);
+        }
+
+        $product = $this->productModel->find($productId);
+        if ($product == null) {
+            throw new EntityNotFoundException('product', $productId);
         }
 
         $cartItem = $this->cartItemModel
             ->where(['cart_id' => $cartId, 'product_id' => $productId])
             ->first();
         if ($cartItem != null) {
-            throw new EntityExistsException('carts', $cartId);
+            throw new CartItemExistsException($cartId, $productId);
         }
+
 
         $this->DB::transaction(function() use ($cartId, $productId, $cart) {
             $cartItem = new $this->cartItemModel;
@@ -82,12 +93,17 @@ class CartService implements CartServiceInterface
             'product_id' => $productId,
         ])->first();
         if ($cartItem == null) {
-            throw new EntityNotFoundException('cart_items', $cartId);
+            throw new CartItemNotFoundException($cartId, $productId);
+        }
+
+        $product = $this->productModel->find($productId);
+        if ($product == null) {
+            throw new EntityNotFoundException('product', $productId);
         }
 
         $cart = $this->cartModel->find($cartId);
         if ($cart == null) {
-            throw new EntityNotFoundException('carts', $cartId);
+            throw new EntityNotFoundException('cart', $cartId);
         }
 
         $this->DB::transaction(function() use ($cartItem, $cart) {
@@ -106,12 +122,12 @@ class CartService implements CartServiceInterface
             'product_id' => $productId,
         ])->first();
         if ($cartItem == null) {
-            throw new EntityNotFoundException('cart_items', $cartId);
+            throw new CartItemNotFoundException($cartId, $productId);
         }
 
         $cart = $this->cartModel->find($cartId);
         if ($cart == null) {
-            throw new EntityNotFoundException('carts', $cartId);
+            throw new EntityNotFoundException('cart', $cartId);
         }
 
         $this->DB::transaction(function() use ($cartItem, $cart, $quantity, $productId) {
@@ -132,7 +148,7 @@ class CartService implements CartServiceInterface
     {
         $cart = $this->cartModel->find($cartId);
         if ($cart == null) {
-            throw new EntityNotFoundException('carts', $cartId);
+            throw new EntityNotFoundException('cart', $cartId);
         }
         $cart->status = CartEnums::CART_STATUS_CLOSED;
         $cart->save();

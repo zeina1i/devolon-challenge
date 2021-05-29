@@ -4,7 +4,7 @@
 namespace App\Exceptions;
 
 
-class EntityExistsException extends \Exception
+class EntityExistsException extends ExistsException
 {
     public function __construct(string $entity, int $id)
     {

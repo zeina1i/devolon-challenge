@@ -4,7 +4,7 @@
 namespace App\Exceptions;
 
 
-class EntityNotFoundException extends \Exception
+class EntityNotFoundException extends NotFoundException
 {
     public function __construct(string $entity, int $id)
     {
