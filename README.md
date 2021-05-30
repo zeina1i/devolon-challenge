@@ -28,3 +28,13 @@ make setup
 Now app should be alive on [http://localhost:8009](http://localhost:8009)
 <p align="center"><img src="./devolon-cart-service.png"></p>
 
+## Routes
+<p align="center"><img src="./devolon-routes.png"></p>
+
+## Commands
+<p align="center"><img src="./devolon-commands.png"></p>
+
+## Run Tests
+```
+make phpunit
+```
