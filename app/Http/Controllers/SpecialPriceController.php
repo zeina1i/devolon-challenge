@@ -9,6 +9,7 @@ use App\Exceptions\NotFoundException;
 use App\Service\DTO\SpecialPriceDTO;
 use App\Service\SpecialPriceService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -53,6 +54,8 @@ class SpecialPriceController extends Controller
                 'message' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
             return response()->json([
                 'status' => false,
                 'message' => 'internal server error.',
@@ -93,6 +96,8 @@ class SpecialPriceController extends Controller
                 'message' => $e->getMessage(),
             ], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
             return response()->json([
                 'status' => false,
                 'message' => 'internal server error.',
@@ -130,6 +135,8 @@ class SpecialPriceController extends Controller
                 'message' => $e->getMessage(),
             ], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
             return response()->json([
                 'status' => false,
                 'message' => 'internal server error.',

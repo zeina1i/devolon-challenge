@@ -8,6 +8,7 @@ use App\Exceptions\NotFoundException;
 use App\Service\DTO\ProductDTO;
 use App\Service\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -41,6 +42,8 @@ class ProductController extends Controller
             $productDTO = new ProductDTO(null, $data['title'], $data['unit_price']);
             $productDTO = $this->productService->add($productDTO);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
             return response()->json([
                 'status' => false,
                 'message' => 'internal server error.',
@@ -80,6 +83,8 @@ class ProductController extends Controller
                 'message' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
             return response()->json([
                 'status' => false,
                 'message' => 'internal server error.',
@@ -116,6 +121,8 @@ class ProductController extends Controller
                 'message' => $e->getMessage(),
             ], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
             return response()->json([
                 'status' => false,
                 'message' => 'internal server error.',
