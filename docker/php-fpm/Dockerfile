@@ -9,6 +9,11 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 WORKDIR /devolon
 COPY ./ /devolon
 
+ARG USER=application
+ARG GROUP=application
+RUN addgroup -g 1000 -S ${GROUP} && \
+        adduser -u 1000 -S ${USER} -G ${GROUP}
+
 RUN  composer install --no-dev --no-scripts --optimize-autoloader
 
-RUN chown -hR www-data:www-data /devolon
+RUN chown -hR application:application /devolon
