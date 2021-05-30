@@ -62,7 +62,7 @@ class CartControllerTest extends TestCase
             'product_id' => 5,
             'cart_id' => $cart['id']
         ]);
-        $response->assertStatus(\Illuminate\Http\Response::HTTP_BAD_REQUEST);
+        $response->assertStatus(\Illuminate\Http\Response::HTTP_NOT_FOUND);
 
 //        5-add another available item to our cart
         $response = $this->postJson('/api/v1/cart/add-item', [
@@ -113,6 +113,6 @@ class CartControllerTest extends TestCase
             'product_id' => 1,
             'cart_id' => $cart['id'],
         ]);
-        $response->assertStatus(Response::HTTP_BAD_REQUEST);
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 }
