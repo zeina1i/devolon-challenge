@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SpecialPriceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,3 +28,10 @@ Route::group(['prefix'=> '/v1/product'], function () {
     Route::put('/', [ProductController::class, 'update']);
     Route::delete('/', [ProductController::class, 'delete']);
 });
+
+Route::group(['prefix'=> '/v1/special-price'], function () {
+    Route::post('/', [SpecialPriceController::class, 'create']);
+    Route::put('/', [SpecialPriceController::class, 'update']);
+    Route::delete('/', [SpecialPriceController::class, 'delete']);
+});
+
