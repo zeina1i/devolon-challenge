@@ -15,15 +15,6 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    private $pricingService;
-
-    public function __construct(
-        PricingService $pricingService
-    )
-    {
-        $this->pricingService = $pricingService;
-    }
-
     public function getValidationErrorsString(array $errors) : string
     {
         return implode(', ', $errors);
