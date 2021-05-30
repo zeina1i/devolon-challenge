@@ -62,7 +62,7 @@ class CartController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
-            ], Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_NOT_FOUND);
         } catch (ExistsException $e) {
             return response()->json([
                 'status' => false,
@@ -105,7 +105,7 @@ class CartController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
-            ], Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -143,7 +143,7 @@ class CartController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
-            ], Response::HTTP_BAD_REQUEST);
+            ], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
