@@ -5,6 +5,8 @@ namespace App\Service;
 
 
 use App\Exceptions\EntityNotFoundException;
+use App\Exceptions\ExistsException;
+use App\Exceptions\NotFoundException;
 use App\Model\Product;
 use App\Model\SpecialPrice;
 use App\Service\DTO\SpecialPriceDTO;
@@ -33,6 +35,15 @@ class SpecialPriceService
             throw new EntityNotFoundException("products", $specialPriceDTO->getProductId());
         }
 
+        $specialPrice = $this->specialPriceModel
+            ->where(['product_id' => $specialPriceDTO->getProductId(), 'quantity' => $specialPriceDTO->getQuantity()])
+            ->first();
+        if ($specialPrice != null) {
+            throw new ExistsException(sprintf(
+                "entity special_price with product_id: %s and quantity: %s currently exists",
+                $specialPriceDTO->getProductId(),
+                $specialPriceDTO->getQuantity()));
+        }
         $specialPrice = $this->specialPriceTransformer->transformDTOToEntity($specialPriceDTO);
         $specialPrice->save();
 
@@ -47,13 +58,16 @@ class SpecialPriceService
         return $this->specialPriceTransformer->transformEntityToDTO($specialPrice);
     }
 
-    public function delete(int $specialPriceId) : bool
+    public function delete(int $productId, int $quantity) : bool
     {
         $recordsAffected =  $this->specialPriceModel
-            ->where(['id' => $specialPriceId])
+            ->where(['id' => $productId, 'quantity' => $quantity])
             ->delete();
-        if($recordsAffected == 0) {
-            throw new EntityNotFoundException("special_prices", $specialPriceId);
+        if ($recordsAffected == 0) {
+            throw new NotFoundException(sprintf(
+                "entity special_price with product_id: %s and quantity: %s not found",
+                $productId,
+                $quantity));
         }
 
         return true;

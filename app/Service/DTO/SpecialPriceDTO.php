@@ -4,7 +4,7 @@
 namespace App\Service\DTO;
 
 
-class SpecialPriceDTO
+class SpecialPriceDTO implements \JsonSerializable
 {
     /** @var int $id */
     private $id;
@@ -93,5 +93,22 @@ class SpecialPriceDTO
     public function setPrice(float $price): void
     {
         $this->price = $price;
+    }
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'product_id' => $this->productId,
+            'quantity' => $this->quantity,
+            'price' => $this->price,
+        ];
     }
 }
