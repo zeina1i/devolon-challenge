@@ -37,6 +37,7 @@ Now app should be alive on [http://localhost:8090](http://localhost:8090)
 ## How To Use App:
 Issue these sets of command inside your terminal:
 <br />
+### Cart
 Create an empty cart:
 ```
 curl --location --request POST 'http://localhost:8090/api/v1/cart/create/' \
@@ -72,6 +73,62 @@ curl --location --request DELETE 'http://localhost:8090/api/v1/cart/remove-item'
 --data-raw '{
     "product_id": 1,
     "cart_id": 1
+}'
+```
+
+### Product
+Create product:
+```
+curl --location --request POST 'http://localhost:8090/api/v1/product' \
+--header 'Content-Type: text/plain' \
+--data-raw '{
+    "title": "Huawei",
+    "unit_price": 21
+}'
+```
+Update Product:
+```
+{
+    "product_id": 1,
+    "title": "Huawei",
+    "unit_price": 21
+}
+```
+Delete Product:
+```
+curl --location --request DELETE 'http://localhost:8090/api/v1/product' \
+--header 'Content-Type: text/plain' \
+--data-raw '{
+    "product_id": 3
+}'
+```
+### Special Price
+Create Special Price
+```
+{
+    "product_id": 1,
+    "quantity": 3,
+    "price": 100
+}
+```
+
+Update Special Price
+```
+{
+    "id": 1,
+    "product_id": 1,
+    "quantity": 4,
+    "price": 100
+}
+```
+
+Delete Special Price
+```
+curl --location --request DELETE 'http://localhost:8090/api/v1/special-price' \
+--header 'Content-Type: text/plain' \
+--data-raw '{
+    "product_id": 1,
+    "quantity": 4
 }'
 ```
 ## Commands
