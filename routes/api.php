@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\CartController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,4 +20,10 @@ Route::group(['prefix'=> '/v1/cart'], function () {
     Route::post('/add-item', [CartController::class, 'addItem']);
     Route::delete('/remove-item', [CartController::class, 'removeItem']);
     Route::post('/change-quantity', [CartController::class, 'changeQuantity']);
+});
+
+Route::group(['prefix'=> '/v1/product'], function () {
+    Route::post('/', [ProductController::class, 'create']);
+    Route::put('/', [ProductController::class, 'update']);
+    Route::delete('/', [ProductController::class, 'delete']);
 });
