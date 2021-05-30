@@ -4,7 +4,6 @@
 namespace App\Http\Controllers;
 
 
-use App\Exceptions\EntityNotFoundException;
 use App\Exceptions\NotFoundException;
 use App\Service\DTO\ProductDTO;
 use App\Service\ProductService;
