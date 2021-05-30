@@ -44,8 +44,8 @@ class CartController extends Controller
     {
         $data = $request->json()->all();
         $rules = [
-            'product_id' => 'required',
-            'cart_id' => 'required'
+            'product_id' => 'required|integer',
+            'cart_id' => 'required|integer'
         ];
 
         $validator = Validator::make($data, $rules);
@@ -87,8 +87,8 @@ class CartController extends Controller
     {
         $data = $request->json()->all();
         $rules = [
-            'product_id' => 'required',
-            'cart_id' => 'required'
+            'product_id' => 'required|integer',
+            'cart_id' => 'required|integer'
         ];
 
         $validator = Validator::make($data, $rules);
@@ -124,9 +124,9 @@ class CartController extends Controller
     {
         $data = $request->json()->all();
         $rules = [
-            'product_id' => 'required',
-            'cart_id' => 'required',
-            'quantity' => 'required',
+            'product_id' => 'required|integer',
+            'cart_id' => 'required|integer',
+            'quantity' => 'required|integer',
         ];
 
         $validator = Validator::make($data, $rules);
