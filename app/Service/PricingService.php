@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Model\Product;
 use App\Model\SpecialPrice;
+use App\Service\DTO\ItemPricingDetailDTO;
 use App\Service\DTO\PricingRuleDTO;
 
 class PricingService implements PricingServiceInterface
@@ -17,11 +18,12 @@ class PricingService implements PricingServiceInterface
         $this->specialPriceModel = $specialPriceModel;
     }
 
-    public function calculate(int $productId, int $quantity, array $pricingRules = null): int
+    public function calculate(int $productId, int $quantity, array $pricingRules = null): array
     {
         if ($pricingRules == null) {
             $pricingRules = $this->getProductsPricingRules([$productId => $quantity])[$productId];
         }
+        $detailedPrice = [];
 /*
  * the keys of $pricingRules is equal to the $pricingRule.quantity
  * for example $pricingRules data is like [1 => PricingRule(quantity: 1, product_id: 2, price: 100), 3 => PricingRule(quantity: 3, product_id: 2, price: 250)]
@@ -33,12 +35,22 @@ class PricingService implements PricingServiceInterface
         foreach($pricingRules as $pricingRule) {
             /** @var PricingRuleDTO $pricingRule */
             if ($quantity >= $pricingRule->getQuantity()) {
-                $totalPrice += intval($quantity/$pricingRule->getQuantity()) * $pricingRule->getPrice();
-                $quantity = $quantity%$pricingRule->getQuantity();
+                $itemPrice = intval($quantity/$pricingRule->getQuantity()) * $pricingRule->getPrice();
+                $totalPrice += $itemPrice;
+
+                $itemQuantity = $quantity - $quantity%$pricingRule->getQuantity();
+                $quantity -= $itemQuantity;
+
+                $detailedPrice[] = new ItemPricingDetailDTO(
+                    $productId,
+                    $pricingRule,
+                    $itemQuantity,
+                    $itemPrice
+                );
             }
         }
 
-        return $totalPrice;
+        return [$totalPrice, $detailedPrice];
     }
 
     public function getProductsPricingRules(array $productIdQuantityMap): array

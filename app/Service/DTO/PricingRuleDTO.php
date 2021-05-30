@@ -4,7 +4,7 @@
 namespace App\Service\DTO;
 
 
-class PricingRuleDTO
+class PricingRuleDTO implements \JsonSerializable
 {
     /** @var int $productId */
     private $productId;
@@ -22,6 +22,11 @@ class PricingRuleDTO
         $this->productId = $productId;
         $this->quantity = $quantity;
         $this->price = $price;
+    }
+
+    public function __toString()
+    {
+        return sprintf('price: %s for %s of product_id: %s', $this->price, $this->quantity, $this->productId);
     }
 
     /**
@@ -70,5 +75,21 @@ class PricingRuleDTO
     public function setPrice(float $price): void
     {
         $this->price = $price;
+    }
+
+    /**
+     * Specify data which should be serialized to JSON
+     * @link https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'product_id' => $this->productId,
+            'quantity' => $this->quantity,
+            'price' => $this->price,
+        ];
     }
 }

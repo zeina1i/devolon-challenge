@@ -71,12 +71,18 @@ class CartService implements CartServiceInterface
 
 
         $this->DB::transaction(function() use ($cartId, $productId, $cart) {
+            /* ------------------------------------------------------
+             price array includes the total_price in the 0 index,
+             and detailed pricing rules which is used in the calculation in the 1 index
+            ---------------------------------------------------------*/
+            $priceArray = $this->pricingService->calculate($productId, 1);
+
             $cartItem = new $this->cartItemModel;
             $cartItem->cart_id = $cartId;
             $cartItem->product_id = $productId;
             $cartItem->quantity = 1;
-            $cartItem->payable_price = $this->pricingService->calculate($productId, 1);
-            $cartItem->detailed_price = '{}';
+            $cartItem->payable_price = $priceArray[0];
+            $cartItem->detailed_price = json_encode($priceArray[1]);
             $cartItem->save();
 
             $cart->payable_price += $cartItem->payable_price;
@@ -132,9 +138,15 @@ class CartService implements CartServiceInterface
 
         $this->DB::transaction(function() use ($cartItem, $cart, $quantity, $productId) {
             $cart->payable_price -= $cartItem->payable_price;
+          /* ------------------------------------------------------
+           price array includes the total_price in the 0 index,
+           and detailed pricing rules which is used in the calculation in the 1 index
+          ---------------------------------------------------------*/
+            $priceArray = $this->pricingService->calculate($productId, $quantity);
 
             $cartItem->quantity = $quantity;
-            $cartItem->payable_price = $this->pricingService->calculate($productId, $quantity);
+            $cartItem->payable_price = $priceArray[0];
+            $cartItem->detailed_price = json_encode($priceArray[1]);
             $cartItem->save();
 
             $cart->payable_price += $cartItem->payable_price;
