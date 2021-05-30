@@ -61,7 +61,7 @@ class SpecialPriceService
     public function delete(int $productId, int $quantity) : bool
     {
         $recordsAffected =  $this->specialPriceModel
-            ->where(['id' => $productId, 'quantity' => $quantity])
+            ->where(['product_id' => $productId, 'quantity' => $quantity])
             ->delete();
         if ($recordsAffected == 0) {
             throw new NotFoundException(sprintf(
