@@ -135,7 +135,7 @@ curl --location --request DELETE 'http://localhost:8090/api/v1/special-price' \
 In order to run commands easily you can use make command. This will help you to easily interact with containers or app.
 <p align="center"><img src="./devolon-commands.png"></p>
 
-# Logs path
+## Logs path
 We store api errors logs in the bellow path:
 ```
 ./storage/logs/laravel.log
