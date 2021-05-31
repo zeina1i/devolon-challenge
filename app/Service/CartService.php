@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Enum\CartEnums;
 use App\Exceptions\CartItemExistsException;
 use App\Exceptions\CartItemNotFoundException;
+use App\Exceptions\ClosedCartException;
 use App\Exceptions\EntityNotFoundException;
 use App\Model\Cart;
 use App\Model\CartItem;
@@ -55,6 +56,9 @@ class CartService implements CartServiceInterface
         $cart = $this->cartModel->find($cartId);
         if ($cart == null) {
             throw new EntityNotFoundException('cart', $cartId);
+        }
+        if ($cart->cart_status == CartEnums::CART_STATUS_CLOSED) {
+            throw new ClosedCartException();
         }
 
         $product = $this->productModel->find($productId);
@@ -111,6 +115,9 @@ class CartService implements CartServiceInterface
         if ($cart == null) {
             throw new EntityNotFoundException('cart', $cartId);
         }
+        if ($cart->cart_status == CartEnums::CART_STATUS_CLOSED) {
+            throw new ClosedCartException();
+        }
 
         $this->DB::transaction(function() use ($cartItem, $cart) {
             $cart->payable_price -= $cartItem->payable_price;
@@ -134,6 +141,9 @@ class CartService implements CartServiceInterface
         $cart = $this->cartModel->find($cartId);
         if ($cart == null) {
             throw new EntityNotFoundException('cart', $cartId);
+        }
+        if ($cart->cart_status == CartEnums::CART_STATUS_CLOSED) {
+            throw new ClosedCartException();
         }
 
         $this->DB::transaction(function() use ($cartItem, $cart, $quantity, $productId) {
@@ -162,7 +172,10 @@ class CartService implements CartServiceInterface
         if ($cart == null) {
             throw new EntityNotFoundException('cart', $cartId);
         }
-        $cart->status = CartEnums::CART_STATUS_CLOSED;
+        $cart->cart_status = CartEnums::CART_STATUS_CLOSED;
+        $cart->closed_at = new \DateTime('now');
         $cart->save();
+
+        return $this->cartToCartDTOTransformer->transform($cart);
     }
 }

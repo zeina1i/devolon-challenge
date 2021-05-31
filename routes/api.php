@@ -21,6 +21,7 @@ Route::group(['prefix'=> '/v1/cart'], function () {
     Route::post('/add-item', [CartController::class, 'addItem']);
     Route::delete('/remove-item', [CartController::class, 'removeItem']);
     Route::post('/change-quantity', [CartController::class, 'changeQuantity']);
+    Route::post('/close', [CartController::class, 'close']);
 });
 
 Route::group(['prefix'=> '/v1/product'], function () {

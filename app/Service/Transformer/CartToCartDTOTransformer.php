@@ -30,7 +30,7 @@ class CartToCartDTOTransformer
             $cart->cart_status,
             $cartItemDTOs,
             $cart->payable_price,
-            new \DateTime($cart->closed_at),
+            $cart->closed_at,
             $cart->updated_at,
             $cart->created_at
         );

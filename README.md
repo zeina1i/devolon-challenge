@@ -76,6 +76,15 @@ curl --location --request DELETE 'http://localhost:8090/api/v1/cart/remove-item'
 }'
 ```
 
+Close a cart:
+```
+curl --location --request POST 'http://localhost:8090/api/v1/cart/close' \
+--header 'Content-Type: text/plain' \
+--data-raw '{
+    "cart_id": 1
+}'
+```
+
 ### Product
 Create product:
 ```

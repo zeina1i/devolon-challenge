@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Exceptions\ClosedCartException;
 use App\Exceptions\ExistsException;
 use App\Exceptions\NotFoundException;
 use App\Service\CartService;
@@ -70,6 +71,11 @@ class CartController extends Controller
                 'status' => false,
                 'message' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
+        } catch (ClosedCartException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             return response()->json([
@@ -109,6 +115,11 @@ class CartController extends Controller
                 'status' => false,
                 'message' => $e->getMessage(),
             ], Response::HTTP_NOT_FOUND);
+        } catch (ClosedCartException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
@@ -149,6 +160,11 @@ class CartController extends Controller
                 'status' => false,
                 'message' => $e->getMessage(),
             ], Response::HTTP_NOT_FOUND);
+        } catch (ClosedCartException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], Response::HTTP_BAD_REQUEST);
         } catch (\Exception $e) {
             Log::error($e->getMessage());
 
@@ -161,6 +177,44 @@ class CartController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'quantity changed successfully',
+            'data' => $cartDTO->jsonSerialize(),
+        ]);
+    }
+
+    public function close(Request $request)
+    {
+        $data = $request->json()->all();
+        $rules = [
+            'cart_id' => 'required|integer',
+        ];
+
+        $validator = Validator::make($data, $rules);
+        if (!$validator->passes()) {
+            return response()->json([
+                'status' => false,
+                'message' => $this->getValidationErrorsString($validator->errors()->all()),
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $cartDTO = $this->cartService->close($data['cart_id']);
+        } catch (NotFoundException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], Response::HTTP_NOT_FOUND);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            return response()->json([
+                'status' => false,
+                'message' => 'internal server error.',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'quantity closed successfully',
             'data' => $cartDTO->jsonSerialize(),
         ]);
     }
